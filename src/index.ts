@@ -1,19 +1,31 @@
 import { Watch } from './Watch';
-import { ModeButton } from './ModeButton';
-import { IncreaseButton } from './IncreaseButton';
-import { LightButton } from './LightButton';
 
 document.addEventListener('DOMContentLoaded', () => {
+
     const watch = new Watch();
     watch.start();
 
-    // Initialize buttons
-    const modeButton = new ModeButton(watch);
-    const increaseButton = new IncreaseButton(watch);
-    const lightButton = new LightButton(watch);
+    // Set up default clock buttons
+    const addClockButton = document.getElementById('add-clock-button');
+    const defaultIncreaseButton = document.getElementById('default-increase-button');
+    const defaultLightButton = document.getElementById('default-light-button');
+    const defaultModeButton = document.getElementById('default-mode-button');
 
-    // Attach event listeners
-    document.getElementById('mode-button')!.addEventListener('click', () => modeButton.press());
-    document.getElementById('increase-button')!.addEventListener('click', () => increaseButton.press());
-    document.getElementById('light-button')!.addEventListener('click', () => lightButton.press());
-});
+    if (defaultIncreaseButton) {
+    defaultIncreaseButton.addEventListener('click', () => watch.increase());
+    }
+
+    if (defaultLightButton) {
+        defaultLightButton.addEventListener('click', () => watch.light());
+    }
+    if (defaultModeButton) {
+        defaultModeButton.addEventListener('click', () => watch.changeMode());
+    }
+
+    // Set up add clock button
+    if (addClockButton) {
+        addClockButton.addEventListener('click', () => watch.addClock());
+
+    }
+}
+);

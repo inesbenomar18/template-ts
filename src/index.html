@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypeScript Watch</title>
+    <title>Watch</title>
     <link rel="stylesheet" href="index.css">
+    <style>
+        .clock {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div id="clock">00:00:00</div>
-        <button id="mode-button">Mode</button>
-        <button id="increase-button">Increase</button>
-        <button id="light-button">Light</button>
+    <div id="default-clock-container" class="clock">
+        <button id="default-increase-button">Increase</button>
+        <button id="default-light-button">Light</button>
+        <button id="default-mode-button">Mode</button>
     </div>
+    <div id="clocks-container">
+        <!-- Additional clocks will be dynamically added here -->
+    </div>
+    <button id="add-clock-button">Add Clock</button>
     <script src="bundle.js"></script>
 </body>
 </html>
