@@ -1,4 +1,5 @@
 import { Watch } from './Watch';
+import { ClockDisplay } from './ClockDisplay';
 
 export class IncreaseButton {
     private watch: Watch;
@@ -7,7 +8,8 @@ export class IncreaseButton {
         this.watch = watch;
     }
 
-    public press() {
-        this.watch.increase();
+    // Method to handle pressing the increase button
+    public press(clockDisplay: ClockDisplay) {
+        this.watch.increase(clockDisplay);
     }
 }

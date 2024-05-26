@@ -1,4 +1,5 @@
 import { Watch } from './Watch';
+import { ClockDisplay } from './ClockDisplay';
 
 export class ModeButton {
     private watch: Watch;
@@ -7,8 +8,8 @@ export class ModeButton {
         this.watch = watch;
     }
 
-    public press() {
-        this.watch.changeMode();
-
+    // Method to handle pressing the mode button
+    public press(clockDisplay: ClockDisplay) {
+        this.watch.changeMode(clockDisplay);
     }
 }

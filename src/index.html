@@ -6,23 +6,43 @@
     <title>Watch</title>
     <link rel="stylesheet" href="index.css">
     <style>
+        /* Styles for clock display */
         .clock {
             margin: 10px;
             padding: 10px;
             border: 1px solid #000;
         }
+
+        /* Styles for clock buttons */
+        .clock-buttons {
+            margin-top: 10px;
+        }
+
+        /* Styles for time display */
+        .time-display {
+            font-size: 20px;
+        }
+
+        /* Styles for dark mode */
+        .dark-mode {
+            background-color: black;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <!-- Container for default clock -->
     <div id="default-clock-container" class="clock">
-        <button id="default-increase-button">Increase</button>
-        <button id="default-light-button">Light</button>
-        <button id="default-mode-button">Mode</button>
+        <div class="time-display"></div>
     </div>
-    <div id="clocks-container">
-        <!-- Additional clocks will be dynamically added here -->
-    </div>
+
+    <!-- Container for additional clocks -->
+    <div id="clocks-container"></div>
+
+    <!-- Button to add new clocks -->
     <button id="add-clock-button">Add Clock</button>
+
+    <!-- JavaScript bundle -->
     <script src="bundle.js"></script>
 </body>
 </html>

@@ -1,15 +1,23 @@
 import { ClockDisplay } from './ClockDisplay';
 
+/**
+ * Class representing a Watch.
+ */
 export class Watch {
-    private clockDisplays: ClockDisplay[] = [];
-    private intervalIds: NodeJS.Timeout[] = [];
-    private mode: 'time' | 'alarm' | 'stopwatch' = 'time';
-    private alarmTime: { hours: number, minutes: number } = { hours: 0, minutes: 0 };
-    private stopwatchTime: { hours: number, minutes: number, seconds: number } = { hours: 0, minutes: 0, seconds: 0 };
-    private defaultClockDisplay: ClockDisplay;
+    private clockDisplays: ClockDisplay[] = []; // Array to store ClockDisplay objects
+    private intervalIds: NodeJS.Timeout[] = []; // Array to store interval IDs for periodic updates
+    private mode: 'time' | 'alarm' | 'stopwatch' = 'time'; // Current mode of the watch
+    private alarmTime: { hours: number, minutes: number } = { hours: 0, minutes: 0 }; // Alarm time
+    private stopwatchTime: { hours: number, minutes: number, seconds: number } = { hours: 0, minutes: 0, seconds: 0 }; // Stopwatch time
+    private defaultClockDisplay: ClockDisplay; // Default clock display
+    private is24HourFormat: boolean = true; // Flag indicating whether the time format is 24-hour
 
+    /**
+     * Creates an instance of Watch.
+     */
     constructor() {
-        this.defaultClockDisplay = new ClockDisplay('Default');
+        // Initialize the default clock display
+        this.defaultClockDisplay = new ClockDisplay('Default', this.is24HourFormat);
         this.clockDisplays.push(this.defaultClockDisplay);
 
         // Initialize the default clock with the current time
@@ -19,20 +27,31 @@ export class Watch {
         const defaultClockContainer = document.getElementById('default-clock-container');
         if (defaultClockContainer) {
             defaultClockContainer.appendChild(this.defaultClockDisplay.getElement());
+            this.addEventListeners(this.defaultClockDisplay); // Add event listeners to default clock
         }
     }
 
+    /**
+     * Starts updating the time periodically.
+     */
     public start() {
         this.updateTime();
         this.intervalIds.push(setInterval(() => this.updateTime(), 1000));
     }
 
+    /**
+     * Stops updating the time.
+     */
     public stop() {
         this.intervalIds.forEach(intervalId => clearInterval(intervalId));
         this.intervalIds = [];
     }
 
-    public changeMode() {
+    /**
+     * Changes the mode of the watch.
+     * @param clockDisplay - The ClockDisplay object associated with the mode change.
+     */
+    public changeMode(clockDisplay: ClockDisplay) {
         if (this.mode === 'time') {
             this.mode = 'alarm';
         } else if (this.mode === 'alarm') {
@@ -41,9 +60,14 @@ export class Watch {
             this.mode = 'time';
         }
         console.log('Current mode:', this.mode);
+        this.clockDisplays.forEach(clock => clock.setMode(this.mode)); // Call setMode on each ClockDisplay
     }
 
-    public increase() {
+    /**
+     * Increases time for alarm or stopwatch modes.
+     * @param clockDisplay - The ClockDisplay object associated with the time increase.
+     */
+    public increase(clockDisplay: ClockDisplay) {
         if (this.mode === 'alarm') {
             this.alarmTime.hours++;
             if (this.alarmTime.minutes >= 60) {
@@ -53,9 +77,9 @@ export class Watch {
                     this.alarmTime.hours = 0;
                 }
             }
-            this.defaultClockDisplay.update(this.alarmTime.hours, this.alarmTime.minutes, 0);
+            clockDisplay.update(this.alarmTime.hours, this.alarmTime.minutes, 0);
         } else if (this.mode === 'stopwatch') {
-            this.stopwatchTime.seconds++;
+            this.stopwatchTime.minutes++;
             if (this.stopwatchTime.seconds >= 60) {
                 this.stopwatchTime.seconds = 0;
                 this.stopwatchTime.minutes++;
@@ -64,10 +88,13 @@ export class Watch {
                     this.stopwatchTime.hours++;
                 }
             }
-            this.defaultClockDisplay.update(this.stopwatchTime.hours, this.stopwatchTime.minutes, this.stopwatchTime.seconds);
+            clockDisplay.update(this.stopwatchTime.hours, this.stopwatchTime.minutes, this.stopwatchTime.seconds);
         }
     }
 
+    /**
+     * Adds a clock display based on user-provided time zone offset.
+     */
     public addClock() {
         const offsetInput = prompt('Enter the time zone offset (GMT±X):');
         if (offsetInput) {
@@ -83,59 +110,81 @@ export class Watch {
         }
     }
 
+    /**
+     * Adds a clock display with the provided time zone.
+     * @param timeZone - The time zone for the new clock display.
+     */
     private addClockDisplay(timeZone: string) {
-    // Pause the updateTime method
-    this.stop();
+        this.stop();
 
-    const newClockDisplay = new ClockDisplay(timeZone);
-    this.clockDisplays.push(newClockDisplay);
+        const newClockDisplay = new ClockDisplay(timeZone, this.is24HourFormat);
+        this.clockDisplays.push(newClockDisplay);
 
-    // Log the unique identifier for the new clock
-    console.log('Added new clock:', newClockDisplay.getElement().id);
+        const timeZoneOffset = newClockDisplay.getTimeZoneOffset();
 
-    // Get the time zone offset in hours
-    const timeZoneOffset = newClockDisplay.getTimeZoneOffset();
-    console.log(timeZoneOffset)
+        const now = new Date();
+        let adjustedHours = now.getHours() + timeZoneOffset;
 
-    // Update the new clock display to show the current time with timezone offset
-    const now = new Date();
+        if (adjustedHours < 0) {
+            adjustedHours += 24;
+        } else if (adjustedHours >= 24) {
+            adjustedHours %= 24;
+        }
 
-    let adjustedHours = now.getHours() + timeZoneOffset;
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
 
-    if (adjustedHours < 0) {
-        adjustedHours += 24; // Wrap around to previous day
-    } else if (adjustedHours >= 24) {
-        adjustedHours %= 24; // Ensure hours stay within 0 to 23 range
+        setTimeout(() => {
+            newClockDisplay.update(adjustedHours, minutes, seconds);
+            this.start();
+        }, 100);
+
+        const clockElement = newClockDisplay.getElement();
+        const clocksContainer = document.getElementById('clocks-container');
+        if (clocksContainer) {
+            clocksContainer.appendChild(clockElement);
+            this.addEventListeners(newClockDisplay); // Add event listeners to the new clock
+        }
     }
 
-    //console.log('Hours on Watch.ts:', hours)
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-
-    // Delay the update by 100 milliseconds
-    setTimeout(() => {
-        newClockDisplay.update(adjustedHours, minutes, seconds);
-        // Resume the updateTime method after initializing the clock
-        this.start();
-    }, 100);
-
-    // Append the new clock display element to the clocks container
-    const clockElement = newClockDisplay.getElement();
-    const clocksContainer = document.getElementById('clocks-container');
-    if (clocksContainer) {
-        clocksContainer.appendChild(clockElement);
+    /**
+     * Adds event listeners to a ClockDisplay object.
+     * @param clockDisplay - The ClockDisplay object to add event listeners to.
+     */
+    private addEventListeners(clockDisplay: ClockDisplay) {
+        clockDisplay.getElement().addEventListener('increase', () => this.increase(clockDisplay));
+        clockDisplay.getElement().addEventListener('light', () => this.light(clockDisplay));
+        clockDisplay.getElement().addEventListener('changeMode', () => this.changeMode(clockDisplay));
+        clockDisplay.getElement().addEventListener('toggleFormat', () => this.toggleFormat());
     }
-}
 
-
-    public light() {
-        console.log('Light button pressed');
-        // Toggle dark mode for all clock displays
+    /**
+     * Toggles between 12-hour and 24-hour time format for all clock displays.
+     */
+    public toggleFormat() {
+        this.is24HourFormat = !this.is24HourFormat;
         this.clockDisplays.forEach(clockDisplay => {
-            clockDisplay.toggleDarkMode();
+            clockDisplay.setFormat(this.is24HourFormat);
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            clockDisplay.update(hours, minutes, seconds);
         });
     }
 
+    /**
+     * Handles the light button press event.
+     * @param clockDisplay - The ClockDisplay object associated with the light button press.
+     */
+    public light(clockDisplay: ClockDisplay) {
+        console.log('Light button pressed');
+        clockDisplay.toggleDarkMode();
+    }
+
+    /**
+     * Initializes the default clock with the current time.
+     */
     private initializeDefaultClock() {
         const defaultClockDisplay = this.defaultClockDisplay;
         const now = new Date();
@@ -145,38 +194,26 @@ export class Watch {
         defaultClockDisplay.update(defaultHours, defaultMinutes, defaultSeconds);
     }
 
+    /**
+     * Updates the time for all clock displays.
+     */
     private updateTime() {
         const now = new Date();
         const defaultHours = now.getHours();
         const defaultMinutes = now.getMinutes();
         const defaultSeconds = now.getSeconds();
-        this.defaultClockDisplay.update(defaultHours, defaultMinutes, defaultSeconds); // Update default clock
+        this.defaultClockDisplay.update(defaultHours, defaultMinutes, defaultSeconds);
 
-        // Update other clock displays based on their time zones
         this.clockDisplays.slice(1).forEach(clockDisplay => {
-            const timeZoneOffset = clockDisplay.getTimeZoneOffset(); // Get time zone offset in minutes
-            const adjustedTime = new Date(now.getTime()); // Create a copy of the current time
-            let adjustedHours = adjustedTime.getHours() + timeZoneOffset
+            const timeZoneOffset = clockDisplay.getTimeZoneOffset();
+            const adjustedTime = new Date(now.getTime());
+            adjustedTime.setHours(now.getHours() + timeZoneOffset);
 
-            if (adjustedHours < 0) {
-                adjustedHours += 24; // Wrap around to previous day
-            } else if (adjustedHours >= 24) {
-                adjustedHours %= 24; // Ensure hours stay within 0 to 23 range
-            }
+            const adjustedHours = adjustedTime.getHours();
+            const adjustedMinutes = adjustedTime.getMinutes();
+            const adjustedSeconds = adjustedTime.getSeconds();
 
-            const minutes = adjustedTime.getMinutes();
-            const seconds = adjustedTime.getSeconds();
-            clockDisplay.update(adjustedHours, minutes, seconds); // Update clock with adjusted time
+            clockDisplay.update(adjustedHours, adjustedMinutes, adjustedSeconds);
         });
-    }
-
-    private getTimeZoneOffset(timeZone: string): number {
-        const match = timeZone.match(/GMT([+-])(\d+)/);
-        if (match) {
-            const sign = match[1] === '+' ? 1 : -1;
-            const hours = parseInt(match[2], 10);
-            return sign * hours * 60; // Convert hours to minutes
-        }
-        return 0; // Default to no offset
     }
 }

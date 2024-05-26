@@ -1,4 +1,5 @@
 import { Watch } from './Watch';
+import { ClockDisplay } from './ClockDisplay';
 
 export class LightButton {
     private watch: Watch;
@@ -7,7 +8,8 @@ export class LightButton {
         this.watch = watch;
     }
 
-    public press() {
-        this.watch.light();
+    // Method to handle pressing the light button
+    public press(clockDisplay: ClockDisplay) {
+        this.watch.light(clockDisplay);
     }
 }
