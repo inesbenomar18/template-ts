@@ -1,0 +1,58 @@
+---------------------------------------------------------------------------------------------------------------
+|                          Watch                                                                              |
+---------------------------------------------------------------------------------------------------------------
+| - clockDisplay: ClockDisplay                                                                                |
+| - intervalId?: NodeJS.Timeout                                                                               |
+| - mode: 'time' | 'alarm' | 'stopwatch' = 'time'                                                             |
+| - alarmTime: { hours: number, minutes: number } = { hours: 0, minutes: 0 }                                  |
+| - stopwatchTime: { hours: number, minutes: number, seconds: number } = { hours: 0, minutes: 0, seconds: 0 } |
+---------------------------------------------------------------------------------------------------------------
+| + constructor()                                                                                             |
+| + start()                                                                                                   |
+| + stop()                                                                                                    |
+| + changeMode(newMode: 'time' | 'alarm' | 'stopwatch'): void                                                 |
+| + increase(): void                                                                                          |
+| + light(): void                                                                                             |
+| + updateTime(): void                                                                                        |
+---------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------
+|                    ClockDisplay                                 |
+-------------------------------------------------------------------
+| - element: HTMLElement                                          |
+-------------------------------------------------------------------
+| + constructor()                                                 |
+| + update(hours: number, minutes: number, seconds: number): void |
+| + toggleDarkMode(): void                                        |
+| + pad(number: number): string                                   |
+-------------------------------------------------------------------
+
+--------------------------------
+|         ModeButton           |
+--------------------------------
+| + constructor(watch: Watch)  |
+--------------------------------
+| + press(): void              |
+--------------------------------
+
+---------------------------------------
+|         IncreaseButton              |
+---------------------------------------
+| + constructor(watch: Watch)         |
+---------------------------------------
+| + press(): void                     |
+---------------------------------------
+
+------------------------------------
+|          LightButton             |
+------------------------------------
+| + constructor(watch: Watch)      |
+------------------------------------
+| + press(): void                  |
+------------------------------------
+
+Relationships:
+
+    - Watch to ClockDisplay: Composition relationship. Watch contains a ClockDisplay instance.
+    - Watch to ModeButton, IncreaseButton, LightButton: Association relationship. Watch interacts with these buttons.
+    - ClockDisplay to Watch: Dependency relationship. ClockDisplay instances are managed and used by the Watch class.

@@ -1,0 +1,81 @@
+---------------------------------------------------------------------------------------------------------------
+|                          Watch                                                                              |
+---------------------------------------------------------------------------------------------------------------
+| - clockDisplays: ClockDisplay[]                                                                             |
+| - intervalIds: NodeJS.Timeout[]                                                                             |
+| - mode: 'time' | 'alarm' | 'stopwatch' = 'time'                                                             |
+| - alarmTime: { hours: number, minutes: number } = { hours: 0, minutes: 0 }                                  |
+| - stopwatchTime: { hours: number, minutes: number, seconds: number } = { hours: 0, minutes: 0, seconds: 0 } |
+| - defaultClockDisplay: ClockDisplay                                                                         |
+| - is24HourFormat: boolean = true                                                                            |
+---------------------------------------------------------------------------------------------------------------
+| + constructor()                                                                                             |
+| + start(): void                                                                                             |
+| + stop(): void                                                                                              |
+| + changeMode(clockDisplay: ClockDisplay): void                                                              |
+| + increase(clockDisplay: ClockDisplay): void                                                                |
+| + addClock(): void                                                                                          |
+| + toggleFormat(): void                                                                                      |
+| + light(clockDisplay: ClockDisplay): void                                                                   |
+| + addClockDisplay(timeZone: string): void                                                                   |
+| + addEventListeners(clockDisplay: ClockDisplay): void                                                       |
+| + initializeDefaultClock(): void                                                                            |
+| + updateTime(): void                                                                                        |
+---------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------
+|                    ClockDisplay                                 |
+-------------------------------------------------------------------
+| - element: HTMLElement                                          |
+| - timeZone: string                                              |
+| - isAM: boolean = true                                          |
+| - is24HourFormat: boolean = true                                |
+| - timeDisplay: HTMLElement                                      |
+| - mode: 'time' | 'alarm' | 'stopwatch' = 'time'                 |
+-------------------------------------------------------------------
+| + constructor(timeZone: string, is24HourFormat: boolean)        |
+| + update(hours: number, minutes: number, seconds: number): void |
+| + toggleDarkMode(): void                                        |
+| + getElement(): HTMLElement                                     |
+| + getTimeZoneOffset(): number                                   |
+| + setFormat(is24HourFormat: boolean): void                      |
+| + setMode(mode: 'time' | 'alarm' | 'stopwatch'): void           |
+| + pad(number: number): string                                   |
+| + addButtons(): void                                            |
+-------------------------------------------------------------------
+
+--------------------------------
+|         ModeButton           |
+--------------------------------
+| + constructor(watch: Watch)  |
+| + press(): void              |
+--------------------------------
+
+---------------------------------------
+|         IncreaseButton              |
+---------------------------------------
+| + constructor(watch: Watch)         |
+| + press(): void                     |
+---------------------------------------
+
+------------------------------------
+|          LightButton             |
+------------------------------------
+| + constructor(watch: Watch)      |
+| + press(): void                  |
+------------------------------------
+
+---------------------------------------------
+|         ToggleFormatButton                |
+---------------------------------------------
+| + constructor(watch: Watch)               |
+| + press(): void                           |
+---------------------------------------------
+
+Relationships:
+
+    - Watch to ClockDisplay: Composition relationship. Watch contains ClockDisplay instances.
+    - Watch to ModeButton, IncreaseButton, LightButton, ToggleFormatButton: Association relationship. Watch interacts with these buttons.
+    - ClockDisplay to ToggleFormatButton: Association relationship. ClockDisplay interacts with the ToggleFormatButton.
+    - ClockDisplay to ModeButton, IncreaseButton, LightButton: Association relationship. ClockDisplay may interact with these buttons.
+    - ClockDisplay to Watch: Dependency relationship. ClockDisplay instances are managed and used by the Watch class.
